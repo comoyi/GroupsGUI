@@ -1,15 +1,29 @@
 ﻿using BepInEx;
-using UnityEngine;
+using BepInEx.Logging;
+using HarmonyLib;
 
 namespace GroupsGUI
 {
-    [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
+    [BepInDependency("org.bepinex.plugins.groups", BepInDependency.DependencyFlags.SoftDependency)]
     public class GroupsGUI : BaseUnityPlugin
     {
+        private const string PluginGuid = "com.comoyi.valheim.GroupsGUI";
+        private const string PluginName = "GroupsGUI";
+        private const string PluginVersion = "1.0.1";
+
+        private readonly Harmony harmony = new Harmony(PluginGuid);
+
+        private static ManualLogSource Log = BepInEx.Logging.Logger.CreateLogSource("GroupsGUI");
+        
         private void Awake()
         {
-            // Plugin startup logic
-            Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
+            
+            
+            
+            
+            harmony.PatchAll();
+            Log.LogInfo($"Plugin {PluginName} loaded");
         }
     }
 }

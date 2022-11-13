@@ -1,0 +1,6 @@
+.idea/
+bin/
+obj/
+GroupsGUI.sln.DotSettings.user
+/thunderstore/BepInEx/plugins/GroupsGUI/GroupsGUI.dll
+/thunderstore/*.zip

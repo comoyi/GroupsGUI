@@ -31,12 +31,11 @@ namespace GroupsGUI
 
         private void OnGUI()
         {
-            int x = 0;
-            int y = 0;
+            int x = 50;
+            int y = 300;
             if (GUI.Button(new Rect(x, y, 70, 20), "队伍"))
             {
                 isOpen = !isOpen;
-                Log.LogInfo("clicked Group Button, Toggle");
             }
 
             y += 20;
@@ -48,7 +47,7 @@ namespace GroupsGUI
             if (GUI.Button(new Rect(x, y, 70, 20), "创建队伍"))
             {
                 Groups.API.CreateNewGroup();
-                Log.LogInfo("clicked Group Button, Create New Group");
+                Log.LogInfo("Create New Group");
             }
 
             y += 20;
@@ -56,7 +55,7 @@ namespace GroupsGUI
             if (GUI.Button(new Rect(x, y, 70, 20), "离开队伍"))
             {
                 Groups.API.LeaveGroup();
-                Log.LogInfo("clicked Group Button, Leave Group");
+                Log.LogInfo("Leave Group");
             }
 
             y += 20;
@@ -64,7 +63,7 @@ namespace GroupsGUI
             List<ZNet.PlayerInfo> players = ZNet.instance.GetPlayerList();
             foreach (var player in players)
             {
-                x = 0;
+                x = 50;
                 string playerName = player.m_name;
                 long targetId = ZNet.instance.GetPlayerList().FirstOrDefault(p => string.Compare(playerName, p.m_name, StringComparison.OrdinalIgnoreCase) == 0).m_characterID.userID;
                 if (targetId == 0)
@@ -74,21 +73,19 @@ namespace GroupsGUI
 
                 GUI.Label(new Rect(x, y, 70, 20), playerName);
                 x += 70;
-
+                
                 if (GUI.Button(new Rect(x, y, 70, 20), "申请加入"))
                 {
                     Groups.API.JoinGroup(Groups.PlayerReference.fromPlayerId(targetId));
-                    Log.LogInfo($"playerName: {playerName}, targetId: {targetId}");
-                    Log.LogInfo("clicked Group Button, Join Group");
+                    Log.LogInfo($"Join Group, playerName: {playerName}, targetId: {targetId}");
                 }
 
                 x += 70;
 
-                if (GUI.Button(new Rect(x, y, 70, 20), "强制邀请"))
+                if (GUI.Button(new Rect(x, y, 70, 20), "直接邀请"))
                 {
                     Groups.API.ForcePlayerIntoOwnGroup(Groups.PlayerReference.fromPlayerId(targetId));
-                    Log.LogInfo($"playerName: {playerName}, targetId: {targetId}");
-                    Log.LogInfo("clicked Group Button, Force Invite to Group");
+                    Log.LogInfo($"Force Invite to Group, playerName: {playerName}, targetId: {targetId}");
                 }
 
                 x += 70;
@@ -96,8 +93,7 @@ namespace GroupsGUI
                 if (GUI.Button(new Rect(x, y, 70, 20), "成为队长"))
                 {
                     Groups.API.PromoteToLeader(Groups.PlayerReference.fromPlayerId(targetId));
-                    Log.LogInfo($"playerName: {playerName}, targetId: {targetId}");
-                    Log.LogInfo("clicked Group Button, Promote to leader");
+                    Log.LogInfo($"Promote to leader, playerName: {playerName}, targetId: {targetId}");
                 }
 
                 y += 20;

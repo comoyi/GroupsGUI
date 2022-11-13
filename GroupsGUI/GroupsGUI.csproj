@@ -28,4 +28,8 @@
             <HintPath>..\Libs\Groups.dll</HintPath>
         </Reference>
     </ItemGroup>
+    
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="Xcopy &quot;$(OutDir)GroupsGUI.dll&quot; &quot;$(SolutionDir)thunderstore\BepInEx\plugins\GroupsGUI\&quot; /Y&#xA;Xcopy &quot;$(OutDir)GroupsGUI.dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\GroupsGUI\&quot; /Y" />
+    </Target>
 </Project>

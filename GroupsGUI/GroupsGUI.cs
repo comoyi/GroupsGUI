@@ -33,32 +33,35 @@ namespace GroupsGUI
         {
             int x = 50;
             int y = 300;
-            if (GUI.Button(new Rect(x, y, 70, 20), "队伍"))
+            int w = 70;
+            int h = 25;
+            int offsetY = 30;
+            if (GUI.Button(new Rect(x, y, w, h), "队伍"))
             {
                 isOpen = !isOpen;
             }
 
-            y += 20;
+            y += offsetY;
             if (!isOpen)
             {
                 return;
             }
 
-            if (GUI.Button(new Rect(x, y, 70, 20), "创建队伍"))
+            if (GUI.Button(new Rect(x, y, w, h), "创建队伍"))
             {
                 Groups.API.CreateNewGroup();
                 Log.LogInfo("Create New Group");
             }
 
-            y += 20;
+            y += offsetY;
 
-            if (GUI.Button(new Rect(x, y, 70, 20), "离开队伍"))
+            if (GUI.Button(new Rect(x, y, w, h), "离开队伍"))
             {
                 Groups.API.LeaveGroup();
                 Log.LogInfo("Leave Group");
             }
 
-            y += 20;
+            y += offsetY;
 
             List<ZNet.PlayerInfo> players = ZNet.instance.GetPlayerList();
             foreach (var player in players)
@@ -71,39 +74,39 @@ namespace GroupsGUI
                     continue;
                 }
 
-                GUI.Label(new Rect(x, y, 70, 20), playerName);
+                GUI.Label(new Rect(x, y, w, h), playerName);
                 x += 70;
-                
-                if (GUI.Button(new Rect(x, y, 70, 20), "申请加入"))
+
+                if (GUI.Button(new Rect(x, y, 35, h), "加入"))
                 {
                     Groups.API.JoinGroup(Groups.PlayerReference.fromPlayerId(targetId));
                     Log.LogInfo($"Join Group, playerName: {playerName}, targetId: {targetId}");
                 }
 
-                x += 70;
+                x += 50;
 
-                if (GUI.Button(new Rect(x, y, 70, 20), "直接邀请"))
+                if (GUI.Button(new Rect(x, y, 35, h), "邀请"))
                 {
                     Groups.API.ForcePlayerIntoOwnGroup(Groups.PlayerReference.fromPlayerId(targetId));
                     Log.LogInfo($"Force Invite to Group, playerName: {playerName}, targetId: {targetId}");
                 }
 
-                x += 70;
+                x += 50;
 
-                if (GUI.Button(new Rect(x, y, 70, 20), "成为队长"))
+                if (GUI.Button(new Rect(x, y, 70, h), "成为队长"))
                 {
                     Groups.API.PromoteToLeader(Groups.PlayerReference.fromPlayerId(targetId));
                     Log.LogInfo($"Promote to leader, playerName: {playerName}, targetId: {targetId}");
                 }
 
-                y += 20;
+                y += offsetY;
             }
 
             List<PlayerReference> groupPlayers = Groups.API.GroupPlayers();
             foreach (var groupPlayer in groupPlayers)
             {
-                GUI.Label(new Rect(x, y, 100, 25), groupPlayer.name);
-                y += 20;
+                GUI.Label(new Rect(x, y, 100, h), groupPlayer.name);
+                y += offsetY;
             }
         }
     }

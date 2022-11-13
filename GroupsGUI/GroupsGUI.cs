@@ -4,7 +4,7 @@ using UnityEngine;
 namespace GroupsGUI
 {
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-    public class Plugin : BaseUnityPlugin
+    public class GroupsGUI : BaseUnityPlugin
     {
         private void Awake()
         {

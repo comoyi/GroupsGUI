@@ -1,0 +1,6 @@
+.idea/
+bin/
+obj/
+SleepPlease.sln.DotSettings.user
+/thunderstore/BepInEx/plugins/SleepPlease/SleepPlease.dll
+/thunderstore/*.zip

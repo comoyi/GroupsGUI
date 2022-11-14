@@ -24,7 +24,9 @@ namespace GroupsGUI
 
         private ConfigEntry<int> configPositionX;
         private ConfigEntry<int> configPositionY;
-        
+        private static Texture2D groupIcon;
+
+        private static bool isGameStarted = false;
         private bool isOpen = false;
 
         private void Awake()
@@ -32,12 +34,19 @@ namespace GroupsGUI
             configPositionX = Config.Bind("UI", "X", 50, "Position X");
             configPositionY = Config.Bind("UI", "Y", 300, "Position Y");
 
+            groupIcon = GetGroupIcon();
+
             harmony.PatchAll();
             Log.LogInfo($"Plugin {PluginName} loaded");
         }
 
         private void OnGUI()
         {
+            if (!isGameStarted)
+            {
+                return;
+            }
+
             int x = configPositionX.Value;
             int y = configPositionY.Value;
             int w = 70;
@@ -60,7 +69,7 @@ namespace GroupsGUI
                 Log.LogInfo("Create New Group");
             }
 
-            y += offsetY;
+            x += 70;
 
             if (GUI.Button(new Rect(x, y, w, h), "离开队伍"))
             {
@@ -69,6 +78,30 @@ namespace GroupsGUI
             }
 
             y += offsetY;
+            
+            List<PlayerReference> groupPlayers = Groups.API.GroupPlayers();
+            foreach (var groupPlayer in groupPlayers)
+            {
+                x = configPositionX.Value;
+
+                string playerName = groupPlayer.name;
+                long targetId = groupPlayer.peerId;
+                if (targetId == 0)
+                {
+                    continue;
+                }
+
+                GUI.Label(new Rect(x, y, 100, h), groupPlayer.name);
+                x += 100;
+
+                if (GUI.Button(new Rect(x, y, 70, h), "成为队长"))
+                {
+                    Groups.API.PromoteToLeader(Groups.PlayerReference.fromPlayerId(targetId));
+                    Log.LogInfo($"Promote to leader, playerName: {playerName}, targetId: {targetId}");
+                }
+
+                y += offsetY;
+            }
 
             List<ZNet.PlayerInfo> players = ZNet.instance.GetPlayerList();
             foreach (var player in players)
@@ -98,24 +131,73 @@ namespace GroupsGUI
                     Log.LogInfo($"Force Invite to Group, playerName: {playerName}, targetId: {targetId}");
                 }
 
-                x += 70;
+                y += offsetY;
+            }
+        }
 
-                if (GUI.Button(new Rect(x, y, 70, h), "成为队长"))
+        [HarmonyPatch(typeof(Game), "Start")]
+        private class CheckGameStart
+        {
+            [HarmonyPostfix]
+            static void Postfix()
+            {
+                isGameStarted = true;
+            }
+        }
+
+        private Texture2D GetGroupIcon()
+        {
+            string relativeFilePath = "BepInEx\\plugins\\GroupsGUI\\group.png";
+            Texture2D tex = LoadTexture(relativeFilePath);
+            if (tex == null)
+            {
+                tex = GetDefaultGroupIcon();
+                Log.LogInfo("Loaded default group icon");
+            }
+            else
+            {
+                Log.LogInfo($"Loaded sleep icon from {relativeFilePath}");
+            }
+
+            return tex;
+        }
+
+        private Texture2D GetDefaultGroupIcon()
+        {
+            Texture2D tex = new Texture2D(10, 10);
+            byte[] pngBytes = new byte[]
+            {
+            };
+            tex.LoadImage(pngBytes);
+            return tex;
+        }
+
+        private static Texture2D LoadTexture(string relativeFilePath)
+        {
+            string filePath = System.IO.Path.GetFullPath(relativeFilePath);
+            Texture2D tex2D;
+            byte[] fileData;
+
+            if (System.IO.File.Exists(filePath))
+            {
+                try
                 {
-                    Groups.API.PromoteToLeader(Groups.PlayerReference.fromPlayerId(targetId));
-                    Log.LogInfo($"Promote to leader, playerName: {playerName}, targetId: {targetId}");
+                    fileData = System.IO.File.ReadAllBytes(filePath);
+                }
+                catch (Exception e)
+                {
+                    Log.LogInfo("" + e.Message);
+                    return null;
                 }
 
-                y += offsetY;
+                tex2D = new Texture2D(10, 10);
+                if (tex2D.LoadImage(fileData))
+                {
+                    return tex2D;
+                }
             }
 
-            x = configPositionX.Value;
-            List<PlayerReference> groupPlayers = Groups.API.GroupPlayers();
-            foreach (var groupPlayer in groupPlayers)
-            {
-                GUI.Label(new Rect(x, y, 100, h), groupPlayer.name);
-                y += offsetY;
-            }
+            return null;
         }
     }
 }
